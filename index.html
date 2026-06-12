@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OLAX Operations Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#f8f9fa;--surface:#ffffff;--surface2:#f1f3f5;--surface3:#e9ecef;
+--text:#1a1a2e;--text2:#495057;--text3:#868e96;
+--border:#dee2e6;--border2:#ced4da;
+--green:#2d6a4f;--green-light:#d8f3dc;--green-mid:#52b788;
+--teal:#0f6e56;--teal-light:#e1f5ee;
+--blue:#185fa5;--blue-light:#e6f1fb;
+--amber:#854f0b;--amber-light:#faeeda;
+--red:#a32d2d;--red-light:#fcebeb;
+--purple:#534ab7;--purple-light:#eeedfe;
+--coral:#993c1d;--coral-light:#faece7;
+--accent:#2d6a4f;--accent2:#52b788;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:240px;min-width:240px;background:var(--surface);border-right:0.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:0.5px solid var(--border)}
+.logo-mark{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:600}
+.logo-text{font-size:15px;font-weight:600;color:var(--text);line-height:1.2}
+.logo-sub{font-size:11px;color:var(--text3);font-weight:400}
+.sidebar-nav{padding:12px 8px;flex:1}
+.nav-section{margin-bottom:8px}
+.nav-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;padding:4px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;color:var(--text2);transition:all 0.15s;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--green-light);color:var(--green);font-weight:500}
+.nav-item i{font-size:17px;opacity:0.8}
+.nav-item.active i{opacity:1}
+.sidebar-footer{padding:12px 16px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text3);line-height:1.6}
+.sidebar-footer strong{color:var(--text2);display:block;margin-bottom:4px;font-size:11.5px}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* HEADER */
+.header{background:var(--surface);border-bottom:0.5px solid var(--border);padding:0 28px}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:14px 0 12px}
+.header-title-group h1{font-size:18px;font-weight:600;color:var(--text);line-height:1.2}
+.header-title-group p{font-size:12.5px;color:var(--text3);margin-top:2px}
+.source-badges{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:12px}
+.source-badge{display:flex;align-items:center;gap:5px;background:var(--surface2);border:0.5px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--text2)}
+.source-badge i{font-size:13px;color:var(--accent2)}
+.badge-xlsx{background:var(--green-light);border-color:#b7e4c7;color:var(--green)}
+.badge-pdf{background:var(--blue-light);border-color:#b5d4f4;color:var(--blue)}
+
+/* CONTENT */
+.content{flex:1;padding:24px 28px;overflow-y:auto}
+
+/* METRIC CARDS */
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.metric-card{background:var(--surface2);border-radius:10px;padding:14px 16px}
+.metric-label{font-size:11.5px;color:var(--text3);margin-bottom:6px;font-weight:500}
+.metric-value{font-size:26px;font-weight:600;color:var(--text);line-height:1}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.metric-card.accent{background:var(--green-light)}
+.metric-card.accent .metric-value{color:var(--green)}
+.metric-card.blue{background:var(--blue-light)}
+.metric-card.blue .metric-value{color:var(--blue)}
+.metric-card.amber{background:var(--amber-light)}
+.metric-card.amber .metric-value{color:var(--amber)}
+.metric-card.purple{background:var(--purple-light)}
+.metric-card.purple .metric-value{color:var(--purple)}
+
+/* TIMELINE */
+.timeline{position:relative}
+.month-section{margin-bottom:32px}
+.month-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.month-badge{background:var(--accent);color:#fff;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;letter-spacing:0.03em}
+.month-title{font-size:16px;font-weight:600;color:var(--text)}
+.month-divider{flex:1;height:0.5px;background:var(--border)}
+.timeline-entry{display:flex;gap:0;margin-bottom:12px}
+.tl-date{min-width:110px;padding-top:14px;padding-right:16px;text-align:right}
+.tl-date-text{font-size:11.5px;color:var(--text3);font-weight:500;white-space:nowrap}
+.tl-connector{display:flex;flex-direction:column;align-items:center;padding-top:14px;margin-right:16px}
+.tl-dot{width:9px;height:9px;border-radius:50%;background:var(--accent2);flex-shrink:0;margin-top:3px}
+.tl-line{width:1px;background:var(--border);flex:1;min-height:20px;margin-top:4px}
+.tl-card{flex:1;background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:0}
+.tl-card:hover{border-color:var(--border2)}
+.tl-card-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.tl-event-title{font-size:13.5px;font-weight:600;color:var(--text)}
+.tl-time{font-size:11px;color:var(--text3);margin-left:auto}
+.tl-items{list-style:none;padding:0}
+.tl-items li{font-size:12.5px;color:var(--text2);padding:2px 0 2px 14px;position:relative;line-height:1.5}
+.tl-items li::before{content:'›';position:absolute;left:2px;color:var(--accent2);font-weight:600}
+.tl-estate-tag{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:5px;margin-bottom:6px;display:inline-block}
+.tag-halwatura{background:var(--green-light);color:var(--green)}
+.tag-mirishena{background:var(--blue-light);color:var(--blue)}
+.tag-hillstream{background:var(--purple-light);color:var(--purple)}
+.tag-frocester{background:var(--amber-light);color:var(--amber)}
+.tag-neuchatel{background:var(--coral-light);color:var(--coral)}
+.tag-all{background:var(--surface3);color:var(--text2)}
+.tag-regional{background:var(--teal-light);color:var(--teal)}
+
+/* STATUS BADGES */
+.status{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:5px}
+.status-done{background:#d8f3dc;color:#2d6a4f}
+.status-issue{background:#fcebeb;color:#a32d2d}
+.status-pending{background:#faeeda;color:#854f0b}
+.status-info{background:#e6f1fb;color:#185fa5}
+
+/* ERP VIEW */
+.estate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:24px}
+.estate-card{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+.estate-card-header{padding:14px 16px 12px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px}
+.estate-avatar{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.av-halwatura{background:var(--green)}
+.av-mirishena{background:var(--blue)}
+.av-hillstream{background:var(--purple)}
+.av-frocester{background:var(--amber)}
+.av-neuchatel{background:var(--coral)}
+.estate-name{font-size:14px;font-weight:600;color:var(--text)}
+.estate-type{font-size:11px;color:var(--text3)}
+.estate-body{padding:14px 16px}
+.erp-section{margin-bottom:12px}
+.erp-section-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:6px}
+.erp-item{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--text2);padding:3px 0;line-height:1.45}
+.erp-item i{font-size:13px;margin-top:1px;flex-shrink:0}
+.erp-item.ok i{color:var(--green)}
+.erp-item.err i{color:var(--red)}
+.erp-item.wrn i{color:var(--amber)}
+.erp-item.inf i{color:var(--blue)}
+.module-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.module-chip{font-size:10.5px;background:var(--surface2);border:0.5px solid var(--border);border-radius:5px;padding:2px 8px;color:var(--text2)}
+.divider{height:0.5px;background:var(--border);margin:10px 0}
+
+/* NETWORK TABLE */
+.net-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.net-table th{font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;padding:6px 10px;background:var(--surface2);text-align:left;border-bottom:0.5px solid var(--border)}
+.net-table td{padding:6px 10px;border-bottom:0.5px solid var(--border);color:var(--text2);vertical-align:top}
+.net-table tr:last-child td{border-bottom:none}
+code{font-family:monospace;font-size:11px;background:var(--surface2);padding:1px 5px;border-radius:4px;color:var(--text)}
+
+/* SECTION CARD */
+.section-card{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px}
+.section-card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-card-title i{font-size:18px;color:var(--accent2)}
+
+/* HIDDEN */
+.view{display:none}.view.active{display:block}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">MS</div>
+      <div>
+        <div class="logo-text">Junior Executive IT</div>
+        <div class="logo-sub">Performance & Work Log</div>
+      </div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-label">Views</div>
+      <button class="nav-item active" onclick="switchView('monthly',this)">
+        <i class="ti ti-calendar-event" aria-hidden="true"></i> Month-wise Operations
+      </button>
+      <button class="nav-item" onclick="switchView('erp',this)">
+        <i class="ti ti-server" aria-hidden="true"></i> ERP System Operations
+      </button>
+    </div>
+    <div class="nav-section" style="margin-top:16px">
+      <div class="nav-label">Estates</div>
+      <button class="nav-item" onclick="filterEstate('Halwatura')">
+        <i class="ti ti-building-estate" aria-hidden="true"></i> Halwatura EO
+      </button>
+      <button class="nav-item" onclick="filterEstate('Hillstream')">
+        <i class="ti ti-building-estate" aria-hidden="true"></i> Hillstream EO
+      </button>
+      <button class="nav-item" onclick="filterEstate('Mirishena')">
+        <i class="ti ti-building-estate" aria-hidden="true"></i> Mirishena EO
+      </button>
+      <button class="nav-item" onclick="filterEstate('Frocester')">
+        <i class="ti ti-building-estate" aria-hidden="true"></i> Frocester EO
+      </button>
+      <button class="nav-item" onclick="filterEstate('Neuchatel')">
+        <i class="ti ti-building-estate" aria-hidden="true"></i> Neuchatel EO
+      </button>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <strong>Hayleys Agriculture</strong>
+    OLAX ERP Implementation<br>Mar – May 2026<br>Analyst: S. Madhuwidhan 
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-top">
+      <div class="header-title-group">
+        <h1>OLAX Operations Command Centre</h1>
+        <p>Estate ERP deployment, networking &amp; configuration activity log — March to May 2026</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT AREA -->
+  <div class="content">
+
+    <!-- ======================= VIEW 1: MONTHLY ======================= -->
+    <div id="view-monthly" class="view active">
+      <h2 class="sr-only">Month-wise operations timeline for March and April 2026</h2>
+
+      <!-- METRICS -->
+      <div class="metric-grid">
+        <div class="metric-card accent">
+          <div class="metric-label">Estates Covered</div>
+          <div class="metric-value">5</div>
+          <div class="metric-sub">Halwatura · Hillstream · Mirishena · Frocester · Neuchatel</div>
+        </div>
+        <div class="metric-card blue">
+          <div class="metric-label">Total Log Days</div>
+          <div class="metric-value">32</div>
+          <div class="metric-sub">Across March &amp; April 2026</div>
+        </div>
+        <div class="metric-card amber">
+          <div class="metric-label">Issues Resolved</div>
+          <div class="metric-value">12</div>
+          <div class="metric-sub">Networking, IP, printer &amp; login issues</div>
+        </div>
+        <div class="metric-card purple">
+          <div class="metric-label">OLAX Modules Configured</div>
+          <div class="metric-value">7+</div>
+          <div class="metric-sub">Payroll, Checkroll, Fleet, G/L, Production…</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Training Sessions</div>
+          <div class="metric-value">3</div>
+          <div class="metric-sub">Day 1, Day 2 (Mar) &amp; Day 3 (Apr)</div>
+        </div>
+      </div>
+
+      <!-- MARCH TIMELINE -->
+      <div class="month-section">
+        <div class="month-header">
+          <span class="month-badge">March 2026</span>
+          <span class="month-title">Onboarding, Field Visits &amp; Initial Deployment</span>
+          <div class="month-divider"></div>
+        </div>
+
+        <div class="timeline">
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Wed 4 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">HO Day 01 — Head Office Onboarding</span>
+                <span class="tl-time">5:00 – 5:30 PM</span>
+              </div>
+              <span class="status status-info">Onboarding</span>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Thu 5 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">HO Day 02 — Systems &amp; Website Review</span>
+                <span class="tl-time">5:00 – 5:30 PM</span>
+              </div>
+              <ul class="tl-items">
+                <li>Got introduced to the HO Staffs</li>
+                <li>IT Manager explained company computer systems</li>
+                <li>Reviewed newly developing HPL Website with colleague</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Fri 6 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">HO Day 03 — PPT Submission &amp; Travel Expenses</span>
+                <span class="tl-time">5:00 – 5:30 PM</span>
+              </div>
+              <ul class="tl-items">
+                <li>Continued website review with intern; submitted PPT to IT Manager</li>
+                <li>Received LKR 10K travel allowance for Up-Country business visit</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">9–16 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">Up-Country Field Visit (6 days)</span>
+                <span class="tl-time">6:00 – 6:30 PM daily</span>
+              </div>
+              <span class="status status-info">Field Visit</span>
+              <span style="font-size:12px;color:var(--text3);margin-left:8px">Mon–Fri and following Monday</span>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Tue 17 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">Returned to Home Office</span>
+                <span class="tl-time">3:00 – 3:30 PM</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">18–19 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Training Days 1 &amp; 2</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <span class="status status-done">Training</span>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Fri 20 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">Low-Country Estate Visit</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <span class="status status-info">Estate Visit</span>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Mon 23 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">Head Office — IT Setup</span>
+                <span class="tl-time">9:00 – 9:30 AM</span>
+              </div>
+              <ul class="tl-items">
+                <li>Received laptop and official company email address</li>
+                <li>Connected laptop to Hayleys Cloud under Mr. Sahan's guidance</li>
+                <li>Mr. Sahan demonstrated mobile work profile setup</li>
+                <li>Received required software from Mr. Sahan</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Tue 24 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">Laptop Setup Completed</span>
+                <span class="tl-time">9:00 – 9:30 AM</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Wed 25 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">Estate Visit — Data BCP &amp; Printer/Scanner Connectivity</span>
+                <span class="tl-time">9:00 – 9:30 AM</span>
+              </div>
+              <div style="margin-bottom:8px;font-size:12px;color:var(--text3);font-weight:500">Email machine (Win 11) back-up results:</div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">
+                <span class="status status-issue">Halwatura — No electricity</span>
+                <span class="status status-done">Hillstream — Successful</span>
+                <span class="status status-pending">Mirishena — Self-service</span>
+                <span class="status status-done">Frocester — Pre-done</span>
+                <span class="status status-pending">Neuchatel — Server absent</span>
+              </div>
+              <ul class="tl-items">
+                <li>Connected printers &amp; scanners to OLAX Server at Hillstream and Frocester</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Thu 26 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">Connected EO Computers to Hayleys Cloud</span>
+                <span class="tl-time">9:00 – 9:30 AM</span>
+              </div>
+              <ul class="tl-items">
+                <li>Reset and reinstalled Windows 11 on all computers</li>
+                <li>Connected machines to Hayleys Cloud (pending machines completed by 8:30 PM)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Fri 27 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">Day 02 — Cloud &amp; OLAX Client Installation Across Estates</span>
+                <span class="tl-time">9:00 – 9:30 AM</span>
+              </div>
+              <div style="margin-top:6px">
+                <span class="tl-estate-tag tag-halwatura">Halwatura</span>
+                <ul class="tl-items">
+                  <li>Router IP changed to <code>1.8</code>, DHCP range set <code>150–200</code></li>
+                  <li>OLAX Server IP set to <code>1.100</code></li>
+                  <li>1 client installed; 1 remaining <span class="status status-pending" style="font-size:10px;padding:1px 6px">Pending</span></li>
+                </ul>
+              </div>
+              <div style="margin-top:8px">
+                <span class="tl-estate-tag tag-hillstream">Hillstream</span>
+                <ul class="tl-items">
+                  <li>Machines connected; OLAX client not installed — ran out of time</li>
+                </ul>
+              </div>
+              <div style="margin-top:8px">
+                <span class="tl-estate-tag tag-mirishena">Mirishena</span>
+                <ul class="tl-items">
+                  <li>Router IP <code>1.8</code>, DHCP <code>150–200</code>, OLAX Server <code>1.100</code></li>
+                  <li>OLAX Server configured to log in to HarvestIT machine by IP</li>
+                </ul>
+              </div>
+              <div style="margin-top:8px">
+                <span class="tl-estate-tag tag-frocester">Frocester</span>
+                <ul class="tl-items">
+                  <li>Router IP <code>1.8</code>, DHCP <code>150–200</code>, OLAX Server <code>1.100</code></li>
+                  <li>1 client installed; 1 remaining <span class="status status-pending" style="font-size:10px;padding:1px 6px">Pending</span></li>
+                </ul>
+              </div>
+              <div style="margin-top:8px">
+                <span class="tl-estate-tag tag-neuchatel">Neuchatel</span>
+                <ul class="tl-items">
+                  <li>Router problem identified; liaised with service provider</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Mon 30 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">Remote Troubleshooting — Printer &amp; IP Login</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-mirishena">Mirishena</span>
+                <ul class="tl-items">
+                  <li>11:30 AM — Logged into OLAX Server via AnyDesk; resolved printer connectivity issue</li>
+                  <li>4:30 PM — Resolved HarvestIT IP login via AnyDesk</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Tue 31 Mar</span></div>
+            <div class="tl-connector"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">EO Visit — OLAX Client Fixes</span>
+                <span class="tl-time">10:00 – 10:30 AM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-neuchatel">Neuchatel</span>
+                <ul class="tl-items">
+                  <li>Connected printer shared by OLAX Server to all OLAX Client PCs</li>
+                  <li>Resolved "cannot access OLAX Server (IP)" on one client machine</li>
+                  <li>Contacted OLAX Team to install client with EO staff assistance</li>
+                  <li>Instructed EO staff to use Steps Recorder during installations</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end timeline -->
+      </div><!-- end march -->
+
+      <!-- APRIL TIMELINE -->
+      <div class="month-section">
+        <div class="month-header">
+          <span class="month-badge" style="background:var(--blue)">April 2026</span>
+          <span class="month-title">OLAX Client Rollout, Configuration &amp; Module Setup</span>
+          <div class="month-divider"></div>
+        </div>
+
+        <div class="timeline">
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Thu 2 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Client Implementation</span>
+                <span class="tl-time">10:30 – 11:00 AM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-mirishena">Mirishena</span>
+                <ul class="tl-items">
+                  <li>Connected scanner &amp; printer — shared to other OLAX clients</li>
+                  <li>Installed OLAX Client</li>
+                  <li>Password issues on OLAX module login (OLAX Server database error)</li>
+                  <li>Set AnyDesk unattended access passwords on all 3 machines (Manager Approved)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Fri 3 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Client Implementation — Multi-Estate</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-halwatura">Halwatura</span>
+                <ul class="tl-items">
+                  <li>OLAX Client status: <span class="status status-done">Successfully installed (Thisaru assisted)</span></li>
+                </ul>
+              </div>
+              <div style="margin-top:6px">
+                <span class="tl-estate-tag tag-hillstream">Hillstream</span>
+                <ul class="tl-items">
+                  <li>OLAX Server became inaccessible from OLAX Client <span class="status status-issue">Issue</span></li>
+                  <li>Remote Desktop Connection through OLAX to HarvestIT <span class="status status-done">Resolved</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Mon 6 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Error Reporting</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <ul class="tl-items">
+                <li>Reported errors to OLAX Support under Mr. Chaminda's guidance</li>
+                <li>Updated Daily Operational Activities Excel Sheet</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Tue 7 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Overview &amp; Error Reporting</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-halwatura">Halwatura</span>
+                <ul class="tl-items">
+                  <li>Overseen all OLAX modules — confirmed working</li>
+                  <li>Visited EO to resolve IP-related issue (restarted server &amp; router)</li>
+                  <li>Checked each module individually; screenshotted errors</li>
+                  <li>Mailed module-level errors to OLAX Support Team</li>
+                  <li>Updated Daily Operational Activities Excel sheet</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Wed 8 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">HarvestIT Troubleshoot</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-mirishena">Mirishena</span>
+                <ul class="tl-items"><li>HarvestIT client machine issues resolved</li></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Fri 10 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Training Day 03</span>
+                <span class="tl-time">4:30 – 5:00 PM</span>
+              </div>
+              <span class="status status-done">Training</span>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Sat 11 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Monitoring</span>
+                <span class="tl-time">10:00 – 10:30 AM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-halwatura">Halwatura</span>
+                <ul class="tl-items">
+                  <li>Remotely logged into OLAX Server; reconfigured IP to WAN adapter</li>
+                  <li>Verified all modules working properly</li>
+                  <li>Resent unresolved error mails to OLAX Support</li>
+                  <li>Updated Daily Operational Activities Excel sheet</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Thu 16 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Configuration</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-neuchatel">Neuchatel</span>
+                <ul class="tl-items">
+                  <li>Ensured all OLAX modules working on all machines</li>
+                  <li>Verified user access to modules based on permissions</li>
+                </ul>
+              </div>
+              <div style="margin-top:6px">
+                <span class="tl-estate-tag tag-all">OLAX Admin Panel</span>
+                <ul class="tl-items">
+                  <li>Assigned role permissions via OLAX Admin Panel</li>
+                  <li>Reset password for user "AO" (User Master)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Fri 17 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Configuration</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-frocester">Frocester</span>
+                <ul class="tl-items">
+                  <li>All OLAX modules verified working</li>
+                  <li>User access confirmed based on permissions</li>
+                  <li>Staff Payroll module fix: database settings folder copied from release folder to C: Drive (OLAX Support assisted)</li>
+                </ul>
+              </div>
+              <div style="margin-top:6px">
+                <span class="tl-estate-tag tag-all">OLAX Admin Panel</span>
+                <ul class="tl-items">
+                  <li>Assigned role permissions; reset password for user "AO"</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Mon 20 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Configuration — Data Entry &amp; Login Errors</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-mirishena">Mirishena</span>
+                <ul class="tl-items">
+                  <li>Checkroll Module April data entry configured</li>
+                  <li>Reported login errors on Checkroll &amp; Staff Payroll modules to OLAX</li>
+                </ul>
+              </div>
+              <div style="margin-top:6px">
+                <span class="tl-estate-tag tag-neuchatel">Neuchatel</span>
+                <ul class="tl-items">
+                  <li>Manager updated Cost Center Master Data via OLAX support</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">21–25 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Configurations (Ongoing)</span>
+                <span class="tl-time">6:00 – 6:30 PM daily</span>
+              </div>
+              <span class="status status-info">Tue–Sat — Multi-estate configuration sessions</span>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Sun 26 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Configurations — Cost Centre Error</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-halwatura">Halwatura</span>
+                <ul class="tl-items">
+                  <li>Error path: <em>Estate Production → Material Requisition Entry</em> — "Kindly select valid cost center or account code"</li>
+                  <li>Created 2 new Cost Centers: <strong>Rain Guard Installation-KD(DD) 2011</strong> and <strong>Rubber 2011 KD (DD)</strong></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Mon 27 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Configurations — All-Estate Prep &amp; Module Fixes</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-all">All Estates</span>
+                <ul class="tl-items">
+                  <li>Requested estates to report any OLAX system issues</li>
+                  <li>Reminded all to bring OLAX Server Machines for upcoming training</li>
+                </ul>
+              </div>
+              <div style="margin-top:6px">
+                <span class="tl-estate-tag tag-neuchatel">Neuchatel</span>
+                <ul class="tl-items">
+                  <li>Fixed "Unable to login" on: Estate Production, G/L Cash Book, Fleet Management</li>
+                  <li>Resolved "Invalid User Details" for user "HPNEUINOKA" via Admin Panel</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-entry">
+            <div class="tl-date"><span class="tl-date-text">Tue 28 Apr</span></div>
+            <div class="tl-connector"><div class="tl-dot" style="background:var(--blue)"></div></div>
+            <div class="tl-card">
+              <div class="tl-card-header">
+                <span class="tl-event-title">OLAX Training Session — All Estates</span>
+                <span class="tl-time">6:00 – 6:30 PM</span>
+              </div>
+              <div style="margin-top:4px">
+                <span class="tl-estate-tag tag-regional">Regional Office</span>
+                <ul class="tl-items">
+                  <li>Configured OLAX Server IPs on all estate machines: Wi-Fi → MS Loopback <code>192.168.1.100</code></li>
+                  <li>Reconfigured back to Wi-Fi Adapter to ensure OLAX works in estate offices</li>
+                </ul>
+              </div>
+              <div style="margin-top:6px">
+                <span class="tl-estate-tag tag-all">All Estates</span>
+                <ul class="tl-items">
+                  <li>Remaining OLAX modules reviewed and incomplete data entry noted</li>
+                  <li>Estate-wise data entry checked; uncompleted requests recorded</li>
+                  <li>Mirishena &amp; Hillstream Cost Centre Master Files updated after reconfiguration</li>
+                  <li>Different Pay Rates noted — to be updated by OLAX Team</li>
+                  <li>Opening Balances updated</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end april timeline -->
+      </div><!-- end april section -->
+
+    </div><!-- end view-monthly -->
+
+
+    <!-- ======================= VIEW 2: ERP ======================= -->
+    <div id="view-erp" class="view">
+      <h2 class="sr-only">ERP system operations organized by estate location</h2>
+
+      <div class="metric-grid">
+        <div class="metric-card accent">
+          <div class="metric-label">OLAX Clients Installed</div>
+          <div class="metric-value">5</div>
+          <div class="metric-sub">Across all 5 estate offices</div>
+        </div>
+        <div class="metric-card blue">
+          <div class="metric-label">Network Reconfigurations</div>
+          <div class="metric-value">8</div>
+          <div class="metric-sub">Router IP + DHCP + Server IP changes</div>
+        </div>
+        <div class="metric-card amber">
+          <div class="metric-label">Remote Fixes (AnyDesk)</div>
+          <div class="metric-value">5</div>
+          <div class="metric-sub">Printer, IP login, module access issues</div>
+        </div>
+        <div class="metric-card purple">
+          <div class="metric-label">Admin Panel Actions</div>
+          <div class="metric-value">6+</div>
+          <div class="metric-sub">Role perms, password resets, user fixes</div>
+        </div>
+      </div>
+
+      <!-- NETWORK SUMMARY TABLE -->
+      <div class="section-card">
+        <div class="section-card-title">
+          <i class="ti ti-network" aria-hidden="true"></i> Network Configuration Applied — All Estates
+        </div>
+        <table class="net-table">
+          <thead>
+            <tr>
+              <th>Estate</th>
+              <th>Router IP</th>
+              <th>DHCP Range</th>
+              <th>OLAX Server IP</th>
+              <th>Special Config</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tl-estate-tag tag-halwatura" style="margin:0">Halwatura</span></td>
+              <td><code>192.168.1.8</code></td>
+              <td><code>150 – 200</code></td>
+              <td><code>192.168.1.100</code></td>
+              <td>WAN adapter reconfigured (Apr 11)</td>
+            </tr>
+            <tr>
+              <td><span class="tl-estate-tag tag-mirishena" style="margin:0">Mirishena</span></td>
+              <td><code>192.168.1.8</code></td>
+              <td><code>150 – 200</code></td>
+              <td><code>192.168.1.100</code></td>
+              <td>HarvestIT IP login via AnyDesk</td>
+            </tr>
+            <tr>
+              <td><span class="tl-estate-tag tag-hillstream" style="margin:0">Hillstream</span></td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>Remote Desktop via OLAX resolved</td>
+            </tr>
+            <tr>
+              <td><span class="tl-estate-tag tag-frocester" style="margin:0">Frocester</span></td>
+              <td><code>192.168.1.8</code></td>
+              <td><code>150 – 200</code></td>
+              <td><code>192.168.1.100</code></td>
+              <td>DB settings folder fix for Staff Payroll</td>
+            </tr>
+            <tr>
+              <td><span class="tl-estate-tag tag-neuchatel" style="margin:0">Neuchatel</span></td>
+              <td>ISP issue</td>
+              <td>—</td>
+              <td>—</td>
+              <td>Printer shared via OLAX Server; IP access fixed</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ESTATE CARDS GRID -->
+      <div class="estate-grid">
+
+        <!-- HALWATURA -->
+        <div class="estate-card">
+          <div class="estate-card-header">
+            <div class="estate-avatar av-halwatura">HA</div>
+            <div>
+              <div class="estate-name">Halwatura Estate Office</div>
+              <div class="estate-type">Up-Country · First EO commissioned</div>
+            </div>
+          </div>
+          <div class="estate-body">
+            <div class="erp-section">
+              <div class="erp-section-title">Installation Status</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>OLAX Client installed (Thisaru assisted, Apr 3)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Printer/Scanner connected &amp; shared</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Windows 11 reinstalled; Hayleys Cloud connected</div>
+            </div>
+            <div class="divider"></div>
+            <div class="erp-section">
+              <div class="erp-section-title">Modules Verified</div>
+              <div class="module-chips">
+                <span class="module-chip">Estate Production</span>
+                <span class="module-chip">Material Requisition</span>
+                <span class="module-chip">G/L Cash Book</span>
+                <span class="module-chip">Fleet Management</span>
+                <span class="module-chip">Staff Payroll</span>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="erp-section">
+              <div class="erp-section-title">Issues &amp; Fixes</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>IP issue resolved (server + router restarted, Apr 7)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>WAN adapter IP reconfigured remotely (Apr 11)</div>
+              <div class="erp-item err"><i class="ti ti-alert-circle" aria-hidden="true"></i>Cost Center error on Material Requisition (Apr 26)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>2 new cost centers created: Rain Guard &amp; Rubber 2011 KD</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Data BCP: no electricity at time of visit (Mar 25)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MIRISHENA -->
+        <div class="estate-card">
+          <div class="estate-card-header">
+            <div class="estate-avatar av-mirishena">MI</div>
+            <div>
+              <div class="estate-name">Mirishena Estate Office</div>
+              <div class="estate-type">Up-Country · HarvestIT integration</div>
+            </div>
+          </div>
+          <div class="estate-body">
+            <div class="erp-section">
+              <div class="erp-section-title">Installation Status</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>OLAX Client installed (Apr 2)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Printer &amp; Scanner connected; shared to all OLAX clients</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>AnyDesk unattended access set on 3 machines (approved)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>HarvestIT IP login configured via AnyDesk (Mar 30)</div>
+            </div>
+            <div class="divider"></div>
+            <div class="erp-section">
+              <div class="erp-section-title">Modules Configured</div>
+              <div class="module-chips">
+                <span class="module-chip">Checkroll (April data)</span>
+                <span class="module-chip">Staff Payroll</span>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="erp-section">
+              <div class="erp-section-title">Issues &amp; Fixes</div>
+              <div class="erp-item err"><i class="ti ti-alert-circle" aria-hidden="true"></i>OLAX password error — DB server error (Apr 2)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Printer connectivity resolved via AnyDesk (Mar 30)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>HarvestIT client machine issues resolved (Apr 8)</div>
+              <div class="erp-item err"><i class="ti ti-alert-circle" aria-hidden="true"></i>Login errors on Checkroll &amp; Staff Payroll reported (Apr 20)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Cost Centre Master File updated after reconfiguration</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HILLSTREAM -->
+        <div class="estate-card">
+          <div class="estate-card-header">
+            <div class="estate-avatar av-hillstream">HS</div>
+            <div>
+              <div class="estate-name">Hillstream Estate Office</div>
+              <div class="estate-type">Up-Country · Remote Desktop configured</div>
+            </div>
+          </div>
+          <div class="estate-body">
+            <div class="erp-section">
+              <div class="erp-section-title">Installation Status</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Data BCP on email machine successful (Mar 25)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Printer &amp; scanner connected to OLAX Server (Mar 25)</div>
+              <div class="erp-item wrn"><i class="ti ti-clock" aria-hidden="true"></i>OLAX Client not installed Mar 27 — ran out of time</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Remote Desktop via OLAX → HarvestIT resolved (Apr 3)</div>
+            </div>
+            <div class="divider"></div>
+            <div class="erp-section">
+              <div class="erp-section-title">Issues &amp; Fixes</div>
+              <div class="erp-item err"><i class="ti ti-alert-circle" aria-hidden="true"></i>OLAX Server became inaccessible from client (Apr 3)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Resolved via Remote Desktop reconnect</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Cost Centre Master File updated (Apr 28)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FROCESTER -->
+        <div class="estate-card">
+          <div class="estate-card-header">
+            <div class="estate-avatar av-frocester">FR</div>
+            <div>
+              <div class="estate-name">Frocester Estate Office</div>
+              <div class="estate-type">Up-Country · Staff Payroll DB fix</div>
+            </div>
+          </div>
+          <div class="estate-body">
+            <div class="erp-section">
+              <div class="erp-section-title">Installation Status</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Data BCP pre-completed by EO before visit</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Router IP, DHCP &amp; OLAX Server IP configured (Mar 27)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>1 OLAX client installed (1 remaining Mar 27)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>All modules verified working (Apr 17)</div>
+            </div>
+            <div class="divider"></div>
+            <div class="erp-section">
+              <div class="erp-section-title">Modules Configured</div>
+              <div class="module-chips">
+                <span class="module-chip">Staff Payroll</span>
+                <span class="module-chip">Estate Production</span>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="erp-section">
+              <div class="erp-section-title">Issues &amp; Fixes</div>
+              <div class="erp-item err"><i class="ti ti-alert-circle" aria-hidden="true"></i>Staff Payroll module not opening on client machines</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Fixed: DB settings folder copied from release to C: Drive (OLAX Support Bathma)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>User role permissions assigned via Admin Panel</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>User "AO" password reset via User Master</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEUCHATEL -->
+        <div class="estate-card">
+          <div class="estate-card-header">
+            <div class="estate-avatar av-neuchatel">NE</div>
+            <div>
+              <div class="estate-name">Neuchatel Estate Office</div>
+              <div class="estate-type">Up-Country · ISP router issue resolved</div>
+            </div>
+          </div>
+          <div class="estate-body">
+            <div class="erp-section">
+              <div class="erp-section-title">Installation Status</div>
+              <div class="erp-item wrn"><i class="ti ti-clock" aria-hidden="true"></i>OLAX Server absent during Mar 25 BCP visit</div>
+              <div class="erp-item err"><i class="ti ti-alert-circle" aria-hidden="true"></i>Router problem noted Mar 27 — ISP notified</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>OLAX Client installed Mar 31 (OLAX Team + EO staff)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Printer shared via OLAX Server to all client PCs</div>
+            </div>
+            <div class="divider"></div>
+            <div class="erp-section">
+              <div class="erp-section-title">Modules Configured</div>
+              <div class="module-chips">
+                <span class="module-chip">Estate Production</span>
+                <span class="module-chip">G/L Cash Book</span>
+                <span class="module-chip">Fleet Management</span>
+                <span class="module-chip">Cost Centre Master</span>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="erp-section">
+              <div class="erp-section-title">Issues &amp; Fixes</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>"Cannot access OLAX Server (IP)" fixed on client machine (Mar 31)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>User permissions set; modules verified working (Apr 16)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Unable-to-login on 3 modules fixed (Apr 27)</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>"Invalid User Details" resolved for "HPNEUINOKA" via Admin Panel</div>
+              <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Cost Center Master Data updated by Manager (Apr 20)</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end estate grid -->
+
+      <!-- OLAX ADMIN ACTIONS -->
+      <div class="section-card">
+        <div class="section-card-title">
+          <i class="ti ti-shield-lock" aria-hidden="true"></i> OLAX Admin Panel — Global Actions
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+          <div>
+            <div class="erp-section-title" style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:8px">Role Permissions</div>
+            <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Defined role permissions for all estate users (Apr 16, 17)</div>
+            <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Module-level access assigned based on user role</div>
+          </div>
+          <div>
+            <div class="erp-section-title" style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:8px">User Management</div>
+            <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>Password reset for user "AO" — User Master (Frocester &amp; Neuchatel)</div>
+            <div class="erp-item ok"><i class="ti ti-circle-check" aria-hidden="true"></i>"Invalid User Details" fixed for HPNEUINOKA (Neuchatel, Apr 27)</div>
+          </div>
+          <div>
+            <div class="erp-section-title" style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:8px">Error Reporting Workflow</div>
+            <div class="erp-item inf"><i class="ti ti-mail" aria-hidden="true"></i>Module-level errors screenshotted &amp; emailed to OLAX Support Team</div>
+            <div class="erp-item inf"><i class="ti ti-refresh" aria-hidden="true"></i>Unresolved errors re-sent with follow-up on Apr 11</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRAINING LOG -->
+      <div class="section-card">
+        <div class="section-card-title">
+          <i class="ti ti-school" aria-hidden="true"></i> OLAX Training Sessions
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px">
+            <span class="status status-done">Day 1</span>
+            <span style="color:var(--text2)">Wed 18 Mar — Initial OLAX system orientation</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px">
+            <span class="status status-done">Day 2</span>
+            <span style="color:var(--text2)">Thu 19 Mar — Continued OLAX operations training</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px">
+            <span class="status status-done">Day 3</span>
+            <span style="color:var(--text2)">Fri 10 Apr — Module-level walkthroughs with estate staff</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px">
+            <span class="status status-done">Full Session</span>
+            <span style="color:var(--text2)">Tue 28 Apr — All-estates Regional Office training: IP config, module review, data entry validation, opening balances</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end view-erp -->
+
+  </div><!-- end content -->
+</div><!-- end main -->
+</div><!-- end app -->
+
+<script>
+function switchView(name, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+function filterEstate(estate) {
+  switchView('erp', null);
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const cards = document.querySelectorAll('.estate-card');
+  cards.forEach(c => {
+    const name = c.querySelector('.estate-name').textContent;
+    c.style.display = name.toLowerCase().includes(estate.toLowerCase()) ? '' : 'none';
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.estate-card').forEach(c => c.style.display = '');
+  }, 4000);
+}
+</script>
+
+</body>
+</html>
